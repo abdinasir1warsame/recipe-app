@@ -1,14 +1,17 @@
-import bannerImg from './assets/images/food.avif';
+import { Routes, Route } from 'react-router-dom';
 
-import Banner from './components/banner';
-import Categories from './components/categories';
+import Home from './pages/home';
+import RecipesPage from './pages/recipesPage';
+import RecipePage from './pages/recipePage';
 
 const App = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <Banner />
-      {/* categories */}
-      <Categories />
+    <div className="flex flex-col items-center justify-center  bg-gray-100">
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path="/recipes" element={<RecipesPage />} />
+        <Route path="/recipe" element={<RecipePage />} />
+      </Routes>
     </div>
   );
 };
