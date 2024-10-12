@@ -6,11 +6,11 @@ import RecipePage from './pages/recipePage';
 
 const App = () => {
   return (
-    <div className="flex flex-col items-center justify-center  bg-gray-100">
+    <div className="flex flex-col   bg-gray-100">
       <Routes>
         <Route index element={<Home />} />
         <Route path="/recipes" element={<RecipesPage />} />
-        <Route path="/recipe" element={<RecipePage />} />
+        <Route path="/recipes/recipe" element={<RecipePage />} />
       </Routes>
     </div>
   );

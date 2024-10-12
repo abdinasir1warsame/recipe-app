@@ -20,6 +20,16 @@
   .text-shadow {
     text-shadow: 0 8px 16px rgba(10, 10, 10, 0.991);
   }
+  .bg-gray {
+    background: linear-gradient(
+      to bottom,
+      #7d7d7d 0%,
+      /* Dark Grey */ #d3d3d3 100% /* Light Grey */
+    );
+    color: white;
+
+    color: white;
+  }
 }
 
 @layer components {

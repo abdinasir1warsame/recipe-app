@@ -1,13 +1,15 @@
 import bannerImg from '../assets/images/food.avif';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from './nav';
 export default function Banner() {
   const [searchParam, setSearchParam] = useState('');
   const [recipeData, setRecipeData] = useState('');
+  const navigate = useNavigate();
   const apiKey = '09f77a001bc540d4999c4f79fc69106f';
 
   async function fetchRecipeData(query) {
-    const url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&query=${query}&number=20`;
+    const url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&query=${query}&addRecipeInformation=true&number=20`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -15,15 +17,20 @@ export default function Banner() {
       }
       const data = await response.json();
       setRecipeData(data);
-      console.log(data);
+      return data;
     } catch (error) {
       console.error('unable to fetch data', error);
     }
   }
 
-  const search = () => {
+  const search = async () => {
     if (searchParam.trim()) {
-      fetchRecipeData(searchParam);
+      const data = await fetchRecipeData(searchParam);
+      if (data) {
+        navigate('/recipes', {
+          state: { recipeData: data, searchParam: searchParam },
+        });
+      }
       setSearchParam('');
     }
   };
