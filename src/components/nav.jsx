@@ -3,7 +3,7 @@ export default function Navbar() {
     <div>
       <div className="hidden lg:flex justify-center h-1/6 relative z-10  text-white text-xl">
         <div className="w-full flex justify-between px-20 py-8">
-          <div className="font-clicker text-4xl ">Bean Scene</div>
+          <div className="font-clicker text-4xl ">Flavor Layer </div>
           <div className="flex  text-center items-center gap-14">
             <p className="text-xl">Home</p>
             <p className="text-xl">Menu</p>
@@ -11,7 +11,7 @@ export default function Navbar() {
             <p className="text-xl">Contact Us</p>
           </div>
           <div className="flex items-center  gap-8">
-            <button className="">Sign In</button>
+            <button className="">login In</button>
             <button className="rounded-3xl px-4 py-2 bg-[#F9C06A] text-black">
               Sign Up
             </button>

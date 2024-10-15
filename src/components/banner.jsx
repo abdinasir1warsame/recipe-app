@@ -191,8 +191,8 @@ export default function Banner() {
       {/* nav  */}
       <Navbar />
       <div className="relative z-10 text-gray-200 h-5/6 flex flex-col justify-center gap-20 lg:gap-10  px-7 lg:pl-20  ">
-        <h1 className="text-7xl font-bold  leading-none w-full lg:w-2/5 ">
-          Never make a bad meal again{' '}
+        <h1 className="text-7xl font-bold  leading-none w-full lg:w-[55%] ">
+          AI-Powered Recipe Search
         </h1>
 
         <div className=" flex w-full lg:w-2/3 text-black ">
