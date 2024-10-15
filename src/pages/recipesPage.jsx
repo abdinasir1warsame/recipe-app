@@ -38,8 +38,8 @@ export default function RecipesPage() {
   }, [recipeId]);
   return (
     <>
-      <div className="">
-        <div className="flex bg-gray h-[40vh] lg:px-40 lg:py-5">
+      <div className="max-w-screen overflow-x-hidden">
+        {/* <div className="flex bg-gray h-[40vh] lg:px-40 lg:py-5">
           <div className="h-1/4 items-center text-black d">
             <div className="flex justify-center items-center">
               <img
@@ -79,14 +79,16 @@ export default function RecipesPage() {
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
 
-        <div className="flex flex-col gap-14 lg:py-20 mb-5 px-10 lg:px-40 w-screen min-h-screen">
+        <div className="flex flex-col gap-14 py-10 lg:py-20 mb-5 px-10 lg:px-40 w-screen min-h-screen">
           <div className="flex flex-col gap-2">
-            <p className="text-4xl font-clicker font-bold">Choose a Dish</p>
+            <p className=" text-5xl lg:text-4xl font-clicker font-bold">
+              Choose a Dish
+            </p>
             <p className="text-3xl font-bold">{dish} RECIPES MADE FOR YOU</p>
           </div>
-          <div className="h-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          <div className="h-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 lg:gap-10">
             {recipes
               .slice(0, showMore === null ? 10 : 19)
               .map((recipe, index) => {
@@ -103,10 +105,10 @@ export default function RecipesPage() {
                 return (
                   <div
                     key={index}
-                    className="h-full h-[20rem] flex-col flex justify-between gap-1"
+                    className=" flex-col flex justify-between gap-1"
                   >
                     <div
-                      className="hover:cursor-pointer hover:scale-105 hover:shadow-lg shadow-black h-full backdrop-blur-lg bg-black/10 rounded-2xl px-8 py-8 flex flex-col justify-between items-center"
+                      className="hover:cursor-pointer hover:scale-105 h-80  lg:h-[10rem]  hover:shadow-lg shadow-black  backdrop-blur-lg bg-black/10 rounded-2xl  flex flex-col justify-between items-center"
                       onClick={() => setRecipeId(recipe.id)}
                       style={{
                         backgroundImage: `url(${recipe.image})`,
@@ -134,7 +136,7 @@ export default function RecipesPage() {
                         )}
                       </div>
                     </div>
-                    <div className="text-2xl font-medium h-[10rem]">
+                    <div className="text-2xl font-medium h-auto lg:h-[4rem]">
                       {recipe.title}
                     </div>
                   </div>

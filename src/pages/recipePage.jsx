@@ -37,9 +37,13 @@ export default function RecipePage() {
 
   return (
     <>
-      <RecipeHeader recipeData={recipeData} />
-      <Ingredients recipeData={recipeData} />
-      <Method recipeData={recipeData} />
+      <div className="max-w-screen overflow-x-hidden">
+        <RecipeHeader recipeData={recipeData} />
+        <div className="flex flex-col-reverse lg:flex-row ">
+          <Method recipeData={recipeData} />
+          <Ingredients recipeData={recipeData} />
+        </div>
+      </div>
     </>
   );
 }

@@ -1,27 +1,27 @@
 export default function NutritionCard({ recipeData }) {
   return (
-    <div className="flex justify-center lg:justify-start bg-gray ">
-      <div className="relative flex flex-col gap-2 py-5    rounded-t-none px-12 rounded-lg">
+    <div className="flex justify-center lg:justify-start backdrop-blur-lg bg-black/60 text-white rounded-lg rounded-t-none">
+      <div className="relative flex flex-col gap-2 py-5    px-3 lg:px-12 rounded-lg">
         <div>
-          <h1 className="absolute top-[-33px] text-3xl t px-2 py-2 backdrop-blur-lg bg-white/40  font-bold rounded-lg ">
+          <h1 className="absolute top-[-33px] left-[70px] lg:top-[-33px] text-xl lg:text-3xl t px-2 py-2 backdrop-blur-lg bg-black/70 font-bold rounded-lg ">
             Nutrition Facts (per serving)
           </h1>
         </div>
-        <div className="flex gap-20 text-medium font-bold mt-1">
+        <div className="flex justify-between lg:justify-start lg:px-0 px-2 lg:gap-20 text-medium font-bold mt-1">
           <div>
-            <div className="font-bold text-2xl">240</div>
+            <div className="font-bold text-sm lg:text-2xl">240</div>
             <div>CALORIES</div>
           </div>
           <div>
-            <div className="font-bold text-2xl">21g</div>
+            <div className="font-bold text-sm lg:text-2xl">21g</div>
             <div>FAT</div>
           </div>
           <div>
-            <div className="font-bold text-2xl">9g</div>
+            <div className="font-bold text-sm lg:text-2xl">9g</div>
             <div>CARBS</div>
           </div>
           <div>
-            <div className="font-bold text-2xl">7g</div>
+            <div className="font-bold text-sm lg:text-2xl">7g</div>
             <div>PROTEIN</div>
           </div>
         </div>
