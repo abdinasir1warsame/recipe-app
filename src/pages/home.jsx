@@ -20,44 +20,128 @@ import {
 export default function NewHome() {
   const [searchParam, setSearchParam] = useState('');
   const [recipeData, setRecipeData] = useState('');
+  const [popularRecipes, setPopularRecipes] = useState([]);
+  const [filtersState, setFiltersState] = useState({
+    diet: [],
+    intolerance: [],
+    dishType: [],
+    cuisine: [],
+    time: [],
+    difficulty: [],
+    rating: [],
+  });
   const navigate = useNavigate();
   const apiKey = '09f77a001bc540d4999c4f79fc69106f';
   const [showFilters, setShowFilters] = useState(false); // Track filter visibility
   const toggleFilters = () => {
     setShowFilters((prev) => !prev);
   };
+  // api call for searched recipes
+  async function fetchRecipeData(query, filters) {
+    const filterParams = [];
 
-  async function fetchRecipeData(query) {
-    const url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&query=${query}&type=dessert&intolerances=gluten,dairy&addRecipeInformation=true&number=20`;
+    // Loop through each filter category in filtersState and build the query string
+    Object.keys(filters).forEach((category) => {
+      filters[category].forEach((option) => {
+        // Add each selected filter option to the query params
+        filterParams.push(`${category}=${encodeURIComponent(option)}`);
+      });
+    });
+
+    // Create the filter query string if any filters are selected
+    const filterQuery =
+      filterParams.length > 0 ? `&${filterParams.join('&')}` : '';
+
+    // Build the final URL with the query and any filters
+    const url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&query=${query}&addRecipeInformation=true&number=20${filterQuery}`;
+
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error('network response not ok');
+        throw new Error('Network response not ok');
       }
       const data = await response.json();
-      setRecipeData(data);
       return data;
     } catch (error) {
-      console.error('unable to fetch data', error);
+      console.error('Unable to fetch data', error);
     }
   }
 
+  // param for api call
   const search = async () => {
-    if (searchParam.trim()) {
-      const data = await fetchRecipeData(searchParam);
+    const query = searchParam.trim() || ''; // If no query, use an empty string
+
+    // Fetch the recipe data, passing both query and filters
+    const data = await fetchRecipeData(query, filtersState);
+
+    if (data) {
+      navigate('/recipes', {
+        state: { recipeData: data, searchParam: query }, // Pass empty query if no query provided
+      });
+    }
+
+    setSearchParam(''); // Reset the search parameter after searching
+  };
+
+  // api triggered by category click
+  const handleCategoryClick = async (category) => {
+    try {
+      const data = await fetchRecipeData(category); // Use the clicked category as the query
       if (data) {
         navigate('/recipes', {
-          state: { recipeData: data, searchParam: searchParam },
+          state: { recipeData: data, searchParam: category }, // Pass the category name as the searchParam
         });
       }
-      setSearchParam('');
+    } catch (error) {
+      console.error('Error executing search:', error);
     }
   };
+  useEffect(() => {
+    const fetchPopularRecipes = async () => {
+      const url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&sort=popularity&number=200&addRecipeInformation=true`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Failed to fetch popular recipes');
+        }
+        const data = await response.json();
+
+        if (Array.isArray(data.results)) {
+          // Shuffle the recipes array randomly
+          const shuffledRecipes = data.results.sort(() => Math.random() - 0.5);
+          setPopularRecipes(shuffledRecipes); // Set shuffled recipes in the state
+        } else {
+          console.error(
+            'API response does not contain an array of recipes:',
+            data.results
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching popular recipes:', error);
+      }
+    };
+
+    fetchPopularRecipes();
+  }, []); // Run only on component mount
+  // filter functions
+
+  const handleFilterChange = (filterCategory, option) => {
+    setFiltersState((prevState) => {
+      const newState = { ...prevState };
+      const filterList = newState[filterCategory];
+      if (filterList.includes(option)) {
+        newState[filterCategory] = filterList.filter((item) => item !== option);
+      } else {
+        newState[filterCategory] = [...filterList, option];
+      }
+      return newState;
+    });
+  };
+  console.log(filtersState);
   return (
     <div className=" ">
       {/* Main Content */}
-      <div className="flex-1 bg-base-300 text-base-content px-2 lg:px-10 xl:px-14 2xl:px-28 py-4 md-py-8 ml-0 lg:ml-64 min-h-screen mb-12 md:mb-0">
-        {/* Search Bar */}
+      <div className="flex-1 space-y-5 bg-base-300 text-base-content px-2 lg:px-10 xl:px-14 2xl:px-28 py-4 md-py-8 ml-0 lg:ml-64 min-h-screen mb-14 mt-7 lg:mt-0 lg:mb-0">
         <div className="space-y-7 md:space-y-10 items-center bg-base-300 text-base-content p-4 rounded-lg shadow-md">
           {/* Search Bar */}
           <div className="space-y-6 ">
@@ -88,427 +172,149 @@ export default function NewHome() {
               </button>
             </div>
             {/* Filter Buttons */}
+            {/* Show Filters */}
             {showFilters && (
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4">
-                <div className="dropdown group dropdown-hover">
-                  <label
-                    tabIndex={0}
-                    className="btn btn-outline btn-sm flex gap-1"
-                  >
-                    {favoritesIcon} Diet
-                  </label>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content z-50 mt-2 menu p-2 bg-base-100 bg-opacity-100 shadow rounded-box w-52 group-hover:block hidden"
-                  >
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Vegetarian
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Vegan
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Gluten-Free
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Keto
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Paleo
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Low-Carb
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Lacto-Vegetarian
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Ovo-Vegetarian
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Primal
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Whole30
-                      </label>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="dropdown group dropdown-hover">
-                  <label
-                    tabIndex={1}
-                    className="btn btn-outline btn-sm flex gap-1"
-                  >
-                    {tagsIcon}
-                    Intolerance
-                  </label>
-                  <ul
-                    tabIndex={1}
-                    className="dropdown-content z-50 mt-2 menu p-2 bg-base-100 bg-opacity-100 shadow rounded-box w-52 group-hover:block hidden"
-                  >
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Vegetarian
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Gluten-Free
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Dairy-Free
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Vegan
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Paleo
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Keto
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Low-Carb
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Nut-Free
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Egg-Free
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        High-Protein
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Low-Sodium
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Whole30
-                      </label>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="dropdown group dropdown-hover">
-                  <label
-                    tabIndex={2}
-                    className="btn btn-outline btn-sm flex gap-1"
-                  >
-                    {cookbookIcon} Dish Type
-                  </label>
-                  <ul
-                    tabIndex={2}
-                    className="dropdown-content z-50 mt-2 menu p-2 bg-base-100 bg-opacity-100 shadow rounded-box w-52 group-hover:block hidden"
-                  >
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Main Course
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Side Dish
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Dessert
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Salad
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Appetizer
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Soup
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Breakfast
-                      </label>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="dropdown group dropdown-hover">
-                  <label
-                    tabIndex={3}
-                    className="btn btn-outline btn-sm flex gap-1"
-                  >
-                    {cuisineIcon}
-                    Cuisine
-                  </label>
-                  <ul
-                    tabIndex={3}
-                    className="dropdown-content z-50 mt-2 menu p-2 shadow bg-base-100 rounded-box w-52 group-hover:block hidden"
-                  >
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Italian
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Mexican
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Indian
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Chinese
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Japanese
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        French
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Mediterranean
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        American
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Spanish
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Greek
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Thai
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Middle Eastern
-                      </label>
-                    </li>
-                  </ul>
-                </div>
-                <div className="dropdown  group dropdown-hover dropdown-hover">
-                  <label
-                    tabIndex={6}
-                    className="btn btn-outline btn-sm flex gap-1"
-                  >
-                    {totalTimeIcon}
-                    Time
-                  </label>
-                  <ul
-                    tabIndex={6}
-                    className="dropdown-content z-50 mt-2 menu p-2 shadow bg-base-100 rounded-box w-52 group-hover:block hidden"
-                  >
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Under 15 Minutes
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Under 30 Minutes
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Under 45 Minutes
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />1 Hour
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        1-2 Hours
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        2+ Hours
-                      </label>
-                    </li>
-                  </ul>
-                </div>
-                <div className="dropdown group dropdown-hover">
-                  <label
-                    tabIndex={4}
-                    className="btn btn-outline btn-sm flex gap-1"
-                  >
-                    {difficultyIcon}
-                    Difficulty
-                  </label>
-                  <ul
-                    tabIndex={4}
-                    className="dropdown-content z-50 mt-2 menu p-2 shadow bg-base-100 rounded-box w-52 group-hover:block hidden"
-                  >
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Easy
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Medium
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />
-                        Hard
-                      </label>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="dropdown group dropdown-hover dropdown-hover">
-                  <label
-                    tabIndex={5}
-                    className="btn btn-outline btn-sm flex gap-1"
-                  >
-                    {ratingIcon}
-                    Rating
-                  </label>
-                  <ul
-                    tabIndex={5}
-                    className="dropdown-content z-50 mt-2 menu p-2 shadow bg-base-100 rounded-box w-52 group-hover:block hidden"
-                  >
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />4 Stars & Up
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />3 Stars & Up
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />2 Stars & Up
-                      </label>
-                    </li>
-                    <li>
-                      <label className="cursor-pointer">
-                        <input type="checkbox" className="mr-2" />1 Star & Up
-                      </label>
-                    </li>
-                  </ul>
-                </div>
+                {[
+                  {
+                    label: 'Diet',
+                    icon: favoritesIcon,
+                    category: 'diet', // Add the category key here
+                    options: [
+                      'Vegetarian',
+                      'Vegan',
+                      'Gluten-Free',
+                      'Keto',
+                      'Paleo',
+                      'Low-Carb',
+                      'Lacto-Vegetarian',
+                      'Ovo-Vegetarian',
+                      'Primal',
+                      'Whole30',
+                    ],
+                  },
+                  {
+                    label: 'Intolerance',
+                    icon: tagsIcon,
+                    category: 'intolerance', // Add the category key here
+                    options: [
+                      'Vegetarian',
+                      'Gluten-Free',
+                      'Dairy-Free',
+                      'Vegan',
+                      'Paleo',
+                      'Keto',
+                      'Low-Carb',
+                      'Nut-Free',
+                      'Egg-Free',
+                      'High-Protein',
+                      'Low-Sodium',
+                      'Whole30',
+                    ],
+                  },
+                  {
+                    label: 'Dish Type',
+                    icon: cookbookIcon,
+                    category: 'dishType', // Add the category key here
+                    options: [
+                      'Main Course',
+                      'Side Dish',
+                      'Dessert',
+                      'Salad',
+                      'Appetizer',
+                      'Soup',
+                      'Breakfast',
+                    ],
+                  },
+                  {
+                    label: 'Cuisine',
+                    icon: cuisineIcon,
+                    category: 'cuisine', // Add the category key here
+                    options: [
+                      'Italian',
+                      'Mexican',
+                      'Indian',
+                      'Chinese',
+                      'Japanese',
+                      'French',
+                      'Mediterranean',
+                      'American',
+                      'Spanish',
+                      'Greek',
+                      'Thai',
+                      'Middle Eastern',
+                    ],
+                  },
+                  {
+                    label: 'Time',
+                    icon: totalTimeIcon,
+                    category: 'time', // Add the category key here
+                    options: [
+                      'Under 15 Minutes',
+                      'Under 30 Minutes',
+                      'Under 45 Minutes',
+                      '1 Hour',
+                      '1-2 Hours',
+                      '2+ Hours',
+                    ],
+                  },
+                  {
+                    label: 'Difficulty',
+                    icon: difficultyIcon,
+                    category: 'difficulty', // Add the category key here
+                    options: ['Easy', 'Medium', 'Hard'],
+                  },
+                  {
+                    label: 'Rating',
+                    icon: ratingIcon,
+                    category: 'rating', // Add the category key here
+                    options: [
+                      '4 Stars & Up',
+                      '3 Stars & Up',
+                      '2 Stars & Up',
+                      '1 Star & Up',
+                    ],
+                  },
+                ].map((filter, index) => (
+                  <div key={index} className="dropdown group dropdown-hover">
+                    <label
+                      tabIndex={index}
+                      className="btn btn-outline btn-sm flex gap-1"
+                    >
+                      {filter.icon}
+                      {filter.label}
+                    </label>
+                    <ul
+                      tabIndex={index}
+                      className="dropdown-content z-50 mt-2 menu p-2 bg-base-100 bg-opacity-100 shadow rounded-box w-52 group-hover:block hidden"
+                    >
+                      {filter.options.map((option, idx) => (
+                        <li key={idx}>
+                          <label className="cursor-pointer">
+                            <input
+                              type="checkbox"
+                              className="mr-2"
+                              checked={filtersState[filter.category]?.includes(
+                                option
+                              )}
+                              onChange={
+                                () =>
+                                  handleFilterChange(filter.category, option) // Use the category
+                              }
+                            />{' '}
+                            {option}
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                <button
+                  className="btn hover:border-white shadow-md btn-sm  bg-gray-800 hover:bg-gray-700"
+                  onClick={() => setFiltersState({})} // Reset filtersState to an empty object
+                >
+                  Clear Filters
+                </button>
               </div>
             )}
           </div>
@@ -516,13 +322,13 @@ export default function NewHome() {
 
         {/* categories  */}
         <div className="space-y-6">
-          <h1 className="text-3xl">categories</h1>
+          <h1 className="text-3xl">Categories</h1>
           <div className=" grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
             {Recipes.sort().map((recipe, index) => (
-              <Link
-                to={'./recipes'}
+              <div
                 key={recipe.id}
                 className=" mb-4 w-20 md:w-28"
+                onClick={() => handleCategoryClick(recipe.name)}
               >
                 <div className="flex w-20 md:w-28 ">
                   <img
@@ -535,7 +341,7 @@ export default function NewHome() {
                 <h3 className=" text-lg text-center font-medium mt-2">
                   {recipe.name}
                 </h3>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
@@ -544,14 +350,14 @@ export default function NewHome() {
         <div className="space-y-6">
           <h1 className="text-3xl">Most Popular Recipes</h1>
           <div className="grid grid-cols-3 sm-grid-cols-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-8 ">
-            {Recipes.sort().map((recipe, index) => (
-              <div className=" shadow-md space-y-1 ">
+            {popularRecipes.slice(0, 8).map((recipe, index) => (
+              <div key={recipe.id} className=" shadow-md space-y-1 ">
                 <img
-                  src={img}
-                  alt=""
+                  src={recipe.image}
+                  alt={recipe.title}
                   className="rounded-2xl h-24 md:h-32  hover:opacity-75 cursor-pointer"
                 />
-                <p className="text-lg md:text-xl ">Vegan Soup</p>
+                <p className="text-lg md:text-xl ">{recipe.title}</p>
               </div>
             ))}
           </div>

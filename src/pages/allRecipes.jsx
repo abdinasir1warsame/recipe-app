@@ -72,13 +72,8 @@ export default function NewAllRecipes() {
               type="text"
               placeholder="Search by title, ingredients or content..."
               className="input input-bordered w-full md:w-80"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleKeyPress} // Handle Enter key press
             />
-            <button className="btn btn-ghost btn-square" onClick={handleSearch}>
-              {searchIcon}
-            </button>
+            <button className="btn btn-ghost btn-square">{searchIcon}</button>
             <button
               className="btn btn-outline btn-sm px-2 flex gap-3"
               onClick={toggleFilters} // Toggle filters on button click
