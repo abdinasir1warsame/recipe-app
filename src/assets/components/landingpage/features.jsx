@@ -135,21 +135,27 @@ export default function Features() {
           <div role="tablist" className="tabs tabs-boxed bg-base-100 ">
             <button
               role="tab"
-              className={`tab ${plan === 'monthly' ? 'tab-active' : ''}`}
+              className={`tab text-lg sm:text-xl lg:text-2xl ${
+                plan === 'monthly' ? 'tab-active' : ''
+              }`}
               onClick={() => setPlan('monthly')}
             >
               Monthly
             </button>
             <button
               role="tab"
-              className={`tab ${plan === 'annually' ? 'tab-active' : ''}`}
+              className={`tab text-lg sm:text-xl lg:text-2xl ${
+                plan === 'annually' ? 'tab-active' : ''
+              }`}
               onClick={() => setPlan('annually')}
             >
               Annually
             </button>
             <button
               role="tab"
-              className={`tab ${plan === 'onetime' ? 'tab-active' : ''}`}
+              className={`tab text-lg sm:text-xl lg:text-2xl ${
+                plan === 'onetime' ? 'tab-active' : ''
+              }`}
               onClick={() => setPlan('onetime')}
             >
               One Time

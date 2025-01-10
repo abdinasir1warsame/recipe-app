@@ -2,7 +2,7 @@ import React from 'react';
 
 function Footer() {
   return (
-    <footer className="p-4 bg-base-300 md:p-8 lg:p-10 shadow-md">
+    <footer className="p-4 bg-base-100 md:p-8 lg:p-10 shadow-md">
       <div className="mx-auto max-w-screen-xl text-center">
         <div className="flex justify-center gap-5 items-center text-4xl font-semibold text-gray-300 dark:text-white">
           <img
