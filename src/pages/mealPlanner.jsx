@@ -43,7 +43,7 @@ export default function MealPlanner() {
     setActiveDropdown((prev) => (prev === index ? null : index));
   };
   return (
-    <div className="flex-1 space-y-5 bg-base-300 text-base-content px-2 lg:px-10 xl:px-14 2xl:px-28 py-4 md-py-8 ml-0 lg:ml-64 min-h-screen mb-14 mt-9 lg:mt-0 lg:mb-0">
+    <div className="flex-1 space-y-5 bg-base-200 text-base-content px-2 lg:px-10 xl:px-14 2xl:px-28 py-7 md-py-8 ml-0 lg:ml-64 min-h-screen mb-14 mt-9 lg:mt-0 lg:mb-0">
       <h1 className="text-3xl">Meal Plan</h1>
       <div className="space-y-4">
         {days.map((day, index) => (

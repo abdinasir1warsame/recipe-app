@@ -42,7 +42,7 @@ export default function NewRecipePage() {
   return (
     <div className="flex">
       {/* Main Content */}
-      <div className="flex-1 bg-base-300 text-base-content px-2  lg:px-32 ml-0 lg:ml-64">
+      <div className="flex-1 bg-base-200 text-gray-300 px-2  lg:px-32 ml-0 lg:ml-64">
         {/* top section */}
         <div className="  px-2 lg:px-8 py-8 flex justify-between">
           <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md flex gap-2 ">
@@ -256,6 +256,7 @@ export default function NewRecipePage() {
 
             {/* Steps */}
             <div className="card shadow-md p-4 text-xl">
+              <h2 className="text-2xl font-bold mb-4">Cooking Steps</h2>
               {method.length > 0 ? (
                 method.map((step, index) => (
                   <div key={index} className="mb-4">

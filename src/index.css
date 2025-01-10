@@ -28,11 +28,26 @@
     );
   }
 }
-
 @layer components {
-  .button-custom {
-    @apply rounded-2xl bg-[#F9C06A]  text-center 
-           shadow shadow-lg shadow-black transition-all duration-300 ease-in-out 
-           hover:scale-105 hover:shadow-2xl active:scale-95 active:shadow-lg tracking-wide; /* Adjust tracking as needed */
+  .background {
+    background: linear-gradient(
+      to bottom,
+      /* Vertical gradient for sidebar */ #0d1b26,
+      /* Dark blue at the top */ #0a1620 40%,
+      /* Deeper blue near the middle */ black 100%
+        /* Transitioning to full black at the bottom */
+    );
+    background-color: #1a202c; /* Fallback dark base color */
+    color: white;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.8); /* Sidebar shadow for depth */
+    text-shadow: 0 8px 16px rgba(0, 0, 0, 0.9); /* Stronger text shadow */
+  }
+  .bg-main {
+    background: linear-gradient(
+      to bottom,
+      #f0f4f8,
+      /* Light grey-blue at the top */ #e6ebef 50%,
+      /* Soft grey in the middle */ #dce2e8 100% /* Faded grey at the bottom */
+    );
   }
 }

@@ -141,8 +141,8 @@ export default function NewHome() {
   return (
     <div className=" ">
       {/* Main Content */}
-      <div className="flex-1 space-y-5 bg-base-300 text-base-content px-2 lg:px-10 xl:px-14 2xl:px-28 py-4 md-py-8 ml-0 lg:ml-64 min-h-screen mb-14 mt-7 lg:mt-0 lg:mb-0">
-        <div className="space-y-7 md:space-y-10 items-center bg-base-300 text-base-content p-4 rounded-lg shadow-md">
+      <div className="flex-1 space-y-5 bg-base-200 text-gray-300 px-2 lg:px-10 xl:px-14 2xl:px-28 py-4 md-py-8 ml-0 lg:ml-64 min-h-screen mb-14 mt-7 lg:mt-0 lg:mb-0">
+        <div className="space-y-7 md:space-y-10 items-center bg-base-200 text-gray-300 p-4 rounded-lg shadow-md">
           {/* Search Bar */}
           <div className="space-y-6 ">
             <div>

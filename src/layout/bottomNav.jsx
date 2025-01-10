@@ -2,7 +2,7 @@ export default function BottomNav() {
   return (
     <>
       {/* bottom nav */}
-      <div className="fixed block lg:hidden z-50 bottom-0 w-full bg-neutral text-neutral-content flex justify-around items-center py-3 shadow-lg h-16">
+      <div className="fixed block lg:hidden z-50 bottom-0 w-full bg-base-300  text-gray-300 flex justify-around items-center py-3 shadow-lg h-16">
         {/* Recipes */}
         <div className="flex flex-col items-center">
           <svg

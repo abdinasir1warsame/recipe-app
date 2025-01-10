@@ -3,7 +3,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Sidebar */}
-      <div className="hidden lg:block fixed w-64 bg-neutral text-neutral-content h-screen px-4 py-4 flex flex-col">
+      <div className="hidden lg:block fixed w-64 bg-base-300 text-neutral-content h-screen px-4 py-4 flex flex-col">
         {/* Logo Section */}
         <div className="flex items-center gap-2 mb-4">
           <div className="rounded-full w-10 h-10 flex items-center justify-center">
@@ -20,25 +20,25 @@ export default function Sidebar() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  to={'/'}
+                  to={'/search'}
                   className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700"
                 >
                   {/* Home Icon */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
+                    strokeWidth={1.5}
                     stroke="currentColor"
+                    className="size-6"
                   >
                     <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M3 12l2-2 7-7 7 7 2 2M5 12v9a2 2 0 002 2h3m10-11l2 2v9a2 2 0 01-2 2h-3m0-9l-7-7-7 7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
                     />
                   </svg>
-                  Home
+                  Search recipes
                 </Link>
               </li>
               <li>

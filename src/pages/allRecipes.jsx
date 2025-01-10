@@ -60,7 +60,7 @@ export default function NewAllRecipes() {
 
   return (
     <div>
-      <div className="flex-1 space-y-10 bg-base-300 text-base-content px-2 lg:px-28 py-8 ml-0 xl:ml-64 min-h-screen">
+      <div className="flex-1 space-y-10 bg-base-200 text-gray-300 px-2 lg:px-28 py-8 ml-0 xl:ml-64 min-h-screen">
         {/* Search Bar */}
         <div className="space-y-6">
           <div>

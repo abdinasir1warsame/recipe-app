@@ -2,12 +2,12 @@ import React from 'react';
 
 const ProfileSection = () => {
   return (
-    <div className="flex-1 justify-center items-center bg-base-300 text-base-content px-8 lg:px-10 xl:px-14 2xl:px-28 py-10 md-py-8 ml-0 lg:ml-64 min-h-screen mb-14 mt-9 lg:mt-0 lg:mb-0">
-      <div className="space-y-10">
+    <div className="flex-1 justify-center items-center bg-base-200 text-gray-300 px-8 lg:px-10 xl:px-14 2xl:px-28 py-10 md-py-8 ml-0 lg:ml-64 min-h-screen mb-14 mt-9 lg:mt-0 lg:mb-0">
+      <div className="space-y-5">
         {/* Profile Header */}
         <div className="flex items-center gap-4 pb-4">
           <div className="avatar">
-            <div className="w-16 h-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+            <div className="w-20 h-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
               <img
                 src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 alt="Profile"
@@ -15,8 +15,8 @@ const ProfileSection = () => {
             </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold">John Doe</h1>
-            <p className="text-sm text-gray-600">AI Recipe Enthusiast</p>
+            <h1 className="text-4xl font-bold">John Doe</h1>
+            <p className="text-xl text-gray-600">AI Recipe Enthusiast</p>
           </div>
         </div>
 
@@ -75,7 +75,7 @@ const ProfileSection = () => {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-2 pb-8 gap-7 ">
+        <div className="grid grid-cols-1 md:grid-cols-2 pb-8 gap-7 ">
           <div className="card bg-base-100 w-full shadow-xl">
             <div className="card-body">
               <h2 className="card-title">Invite people</h2>
@@ -84,7 +84,7 @@ const ProfileSection = () => {
                 family, friends or colleagues to Mr. Cook.
               </p>
               <div className="card-actions justify-end">
-                <button className="btn btn-outline gap-2 text-base-content">
+                <button className="btn btn-outline gap-2 text-gray-300">
                   <span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -114,7 +114,7 @@ const ProfileSection = () => {
                 continue to improve the app.
               </p>
               <div className="card-actions justify-end">
-                <button className="btn btn-outline gap-2 text-base-content">
+                <button className="btn btn-outline gap-2 text-gray-300">
                   <span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

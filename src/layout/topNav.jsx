@@ -1,7 +1,7 @@
 export default function TopNav() {
   return (
     <>
-      <div className="fixed z-50 block lg:hidden top-0 w-full bg-neutral text-neutral-content flex justify-around items-center py-3 shadow-lg h-10">
+      <div className="fixed z-50 block lg:hidden bg-base-300 top-0 w-full  text-gray-300 flex justify-around items-center py-3 shadow-lg h-10">
         {/* numer */}
         <div className="flex flex-col items-center">
           <span className="text-sm">AW</span>
