@@ -12,7 +12,9 @@ export default function NewRecipePage() {
   useEffect(() => {
     console.log('useEffect triggered');
     const apiKey = '09f77a001bc540d4999c4f79fc69106f';
-    const url = `https://api.spoonacular.com/recipes/${recipe}/information?apiKey=${apiKey}&includeNutrition=true`;
+    const apiKey2 = '946a357cab384d79abab5cadbb627684';
+    const apiKey3 = '74a1a3dced1b4192a47805e76e6bbcae';
+    const url = `https://api.spoonacular.com/recipes/${recipe}/information?apiKey=${apiKey3}&includeNutrition=true`;
 
     async function fetchRecipeData() {
       try {
