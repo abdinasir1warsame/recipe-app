@@ -1,70 +1,244 @@
-import { searchIcon } from '../shared/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  getDocs,
+  onSnapshot,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore';
+import { database } from '../assets/googleSignin/config'; // Adjust the path to your config file
+import { userAuth } from '../context/AuthContext';
+import { showMoreIcon2, searchIcon } from '../shared/icons';
+import { useNavigate } from 'react-router-dom';
 export default function MealPlanner() {
-  const days = [
-    { name: 'Sunday', date: 'Jan 5' },
-    { name: 'Monday', date: 'Jan 6' },
-    { name: 'Tuesday', date: 'Jan 7' },
-    { name: 'Wednesday', date: 'Jan 8' },
-    { name: 'Thursday', date: 'Jan 9' },
-    { name: 'Friday', date: 'Jan 10' },
-    { name: 'Saturday', date: 'Jan 11' },
-  ];
-  const recipes = [
-    {
-      title: 'Chicken Salmon',
-      image:
-        'https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2hpY2tlbiUyMHNhbG1vbnxlbnwwfHwwfHx8MA%3D%3D',
-    },
-    {
-      title: 'Chickpea Delight',
-      image:
-        'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2hpY2twZWElMjBkZWxpZ2h0fGVufDB8fDB8fHww',
-    },
-    {
-      title: 'Chinese Cuisine',
-      image:
-        'https://plus.unsplash.com/premium_photo-1661600135596-dcb910b05340?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y2hpbmVzZSUyMGN1aXNpbmV8ZW58MHx8MHx8fDA%3D',
-    },
-    {
-      title: 'Sizzling Kung Pao Chicken',
-      image:
-        'https://media.istockphoto.com/id/1166032915/photo/close-up-view-traditional-kung-pao-chicken-pan-asian-food-spicy-stir-fried-chinese-dish-with.webp?a=1&b=1&s=612x612&w=0&k=20&c=buUX43RWzvSshMMQFlRSgvNe9emvHoZNj6bYxXJ_4xE=',
-    },
-    {
-      title: 'Zesty Citrus Chicken and Salmon Skewers',
-      image:
-        'https://media.istockphoto.com/id/612401230/photo/roasted-salmon-skewers-with-bacon-and-lime.webp?a=1&b=1&s=612x612&w=0&k=20&c=nxP5MPudlhD1yab9braunXW1gkgcV0U58czNrgfmwaw=',
-    },
-  ];
+  const [suggestedRecipes, setSuggestedRecipes] = useState([]);
+  const [randomRecipes, setRandomRecipes] = useState([]);
+  const [selectedRecipe, setSelectedRecipe] = useState('');
+  const [next7Days, setNext7Days] = useState([]);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedMeal, setSelectedMeal] = useState('');
+  const [planner, setPlanner] = useState([]);
+  const [groupedPlanner, setGroupedPlanner] = useState({});
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const navigate = useNavigate();
+  const { user } = userAuth();
+
+  // Generate the next 7 days
+  const getNext7Days = () => {
+    const days = [];
+    const options = { weekday: 'long', month: 'short', day: 'numeric' };
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      days.push(date.toLocaleDateString('en-US', options));
+    }
+
+    return days;
+  };
+
+  // Initialize and update next 7 days
+  useEffect(() => {
+    setNext7Days(getNext7Days());
+  }, []);
+
+  // Fetch suggested recipes and planner data from Firestore
+  useEffect(() => {
+    if (user) {
+      const unsubscribeSuggested = onSnapshot(
+        collection(database, 'suggestedRecipes'),
+        (querySnapshot) => {
+          const suggestedList = [];
+          querySnapshot.forEach((doc) => {
+            suggestedList.push({ id: doc.id, ...doc.data() });
+          });
+
+          setSuggestedRecipes(suggestedList);
+          setRandomRecipes(getRandomRecipes(suggestedList));
+        }
+      );
+
+      const unsubscribePlanner = onSnapshot(
+        collection(database, 'planner'),
+        (querySnapshot) => {
+          const plannerList = [];
+          querySnapshot.forEach((doc) => {
+            plannerList.push({ id: doc.id, ...doc.data() });
+          });
+
+          setPlanner(plannerList);
+        }
+      );
+
+      return () => {
+        unsubscribeSuggested();
+        unsubscribePlanner();
+      };
+    }
+  }, [user]);
+
+  // Group planner items by date whenever planner changes
+  useEffect(() => {
+    const groupByDate = () => {
+      const days = getNext7Days();
+      const grouped = {};
+
+      // Initialize grouped object with the next 7 days
+      days.forEach((day) => {
+        grouped[day] = [];
+      });
+
+      // Populate grouped object with planner data
+      planner.forEach((plan) => {
+        if (!grouped[plan.date]) {
+          grouped[plan.date] = [];
+        }
+        grouped[plan.date].push(plan);
+      });
+
+      return grouped;
+    };
+
+    setGroupedPlanner(groupByDate());
+  }, [planner, next7Days]);
+
+  const getRandomRecipes = (recipes) => {
+    const shuffledRecipes = [...recipes];
+    for (let i = shuffledRecipes.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledRecipes[i], shuffledRecipes[j]] = [
+        shuffledRecipes[j],
+        shuffledRecipes[i],
+      ];
+    }
+    return shuffledRecipes.slice(0, 5);
+  };
+
+  const addToPlanner = async () => {
+    if (!user) return;
+    setSelectedMeal('');
+
+    try {
+      const plannerDoc = {
+        date: selectedDate,
+        meal: selectedMeal,
+        recipe: selectedRecipe,
+        userId: user.uid,
+        createdAt: new Date(),
+      };
+
+      await addDoc(collection(database, 'planner'), plannerDoc);
+      document.getElementById('my_modal_3').close();
+    } catch (error) {
+      console.error('Error adding planner:', error);
+    }
+  };
+
+  const openModal = (recipe) => {
+    document.getElementById('my_modal_3').showModal();
+    setSelectedRecipe(recipe);
+  };
 
   const toggleDropdown = (index) => {
     setActiveDropdown((prev) => (prev === index ? null : index));
+  };
+  const meals = ['Breakfast', 'Brunch', 'Lunch', 'Dinner'];
+
+  const handleMealClick = (recipeId) => {
+    console.log('Recipe clicked:', recipeId); // Add this to debug
+    navigate('/recipes/recipe', { state: { recipe: recipeId } });
+  };
+
+  const handleDeleteMeal = async (plannerId) => {
+    try {
+      // Reference the Firestore document
+      const plannerDoc = doc(database, 'planner', plannerId);
+
+      // Delete the document from Firestore
+      await deleteDoc(plannerDoc);
+
+      // Update the local state to remove the deleted plan
+      setPlanner((prevPlanner) =>
+        prevPlanner.filter((plan) => plan.id !== plannerId)
+      );
+
+      console.log('Meal deleted:', plannerId);
+    } catch (error) {
+      console.error('Error deleting meal:', error);
+    }
   };
   return (
     <div className="flex-1 space-y-5 bg-base-200 text-base-content px-2 lg:px-10 xl:px-14 2xl:px-28 py-7 md-py-8 ml-0 lg:ml-64 min-h-screen mb-14 mt-9 lg:mt-0 lg:mb-0">
       <h1 className="text-3xl">Meal Plan</h1>
       <div className="space-y-4">
-        {days.map((day, index) => (
+        {Object.keys(groupedPlanner).map((date, index) => (
           <div
             key={index}
-            className="flex bg-base-100  justify-between items-center border-[1px]  border-gray-500 shadow shadow-lg rounded-lg p-4"
+            className="flex bg-base-100 justify-between items-center border-[1px] border-gray-500 shadow shadow-lg rounded-lg p-4"
           >
             {/* Day and Date */}
-            <div className="flex gap-4 ">
-              <span className="block text-2xl font-bold">{day.name}</span>
-              <span className="text-gray-400 text-xl">{day.date}</span>
+            <div>
+              <div className="flex gap-4 ">
+                <span className="block text-2xl font-bold">{date}</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7 mb-5">
+                {groupedPlanner[date]?.length > 0 ? (
+                  groupedPlanner[date]
+                    .sort(
+                      (a, b) => meals.indexOf(a.meal) - meals.indexOf(b.meal)
+                    ) // Sort meals chronologically
+                    .map((plan, idx) => (
+                      <div key={idx} className="meal-item ">
+                        <div className="flex justify-between items-center ">
+                          <h2 className="text-xl py-2 mt-1">{plan.meal}</h2>
+                          <div className="dropdown dropdown-bottom">
+                            <div tabIndex={0} role="button" className="m-1">
+                              {showMoreIcon2}
+                            </div>
+                            <ul
+                              tabIndex={0}
+                              className="dropdown-content gap-1 menu backdrop-blur-md bg-black/40 z-50 border border-gray-300 rounded-lg shadow-lg p-2"
+                            >
+                              <li onClick={() => handleDeleteMeal(plan.id)}>
+                                <a>Delete</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div
+                          onClick={() => handleMealClick(plan.recipe.id)}
+                          className="flex justify-center items-center gap-2 shadow-md p-2 border border-gray-300 rounded-xl hover:cursor-pointer"
+                        >
+                          <img
+                            src={plan.recipe?.image || 'placeholder-image-url'} // Fallback if image is undefined
+                            alt={plan.recipe?.title || 'Recipe Image'}
+                            className="h-16 w-16 rounded-2xl"
+                          />
+                          <p className=" font-bold">
+                            {plan.recipe?.title
+                              ? plan.recipe.title.length > 29
+                                ? `${plan.recipe.title.slice(0, 27)}...`
+                                : plan.recipe.title
+                              : 'Untitled Recipe'}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                  <p>No meals planned for this day.</p>
+                )}
+              </div>
             </div>
 
             {/* Plan Button */}
-            {/* Plan Button and Dropdown */}
-            <div className="relative">
+            <div className="relative px-3">
               <button
                 onClick={() => toggleDropdown(index)}
-                className="px-4 py-2 text-lg font-semibold btn btn-md  rounded-lg transition flex gap-3"
+                className=" px-4 py-2 text-lg font-semibold btn btn-md  rounded-lg transition flex gap-3"
               >
-                <span>+</span> Plan
+                <span>+</span>
               </button>
 
               {activeDropdown === index && (
@@ -78,12 +252,107 @@ export default function MealPlanner() {
                       className="w-full ml-3 bg-transparent text-gray-400 placeholder-gray-400 focus:outline-none"
                     />
                   </div>
+                  {/* modal */}
+                  <dialog
+                    id="my_modal_3"
+                    className="modal backdrop-blur bg-black/20"
+                  >
+                    <div className="modal-box backdrop-blur-md bg-black/40 z-2 border border-gray-300 h-[65%] overflow-visible">
+                      <form method="dialog">
+                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                          ✕
+                        </button>
+                      </form>
+                      <h2 className="font-bold text-xl text-white">
+                        Organize your Meals
+                      </h2>
+                      <h3>Choose a date and category for this recipe</h3>
+
+                      <div className="py-3 space-y-2 text-white mt-7 text-xl ">
+                        <h2>Date</h2>
+                        <div className="dropdown w-full">
+                          <div
+                            tabIndex={0}
+                            role="button"
+                            className="btn m-1 backdrop-blur-md bg-black/40 w-full text-white text-lg "
+                          >
+                            {date}
+                          </div>
+                          <ul
+                            tabIndex={0}
+                            className="dropdown-content menu bg-base-200 rounded-box z-[10] w-52 p-2 shadow w-full text-white text-lg "
+                          >
+                            {/* {next7Days.map((day, index) => (
+                              <li key={index}>
+                                <a
+                                  onClick={() => {
+                                    setSelectedDate(day);
+                                    document.activeElement?.blur();
+                                  }}
+                                >
+                                  {day}
+                                </a>
+                              </li>
+                            ))} */}
+                          </ul>
+                        </div>
+                      </div>
+
+                      <div className="py-3 space-y-2  text-white text-lg ">
+                        <h2>Meal type</h2>
+                        <div className="dropdown w-full text-white ">
+                          <div
+                            tabIndex={0}
+                            role="button"
+                            placeholder="choose Meal"
+                            className="btn m-1 backdrop-blur-md bg-black/40 w-full text-white text-lg "
+                          >
+                            {selectedMeal ? selectedMeal : 'Choose a category'}
+                          </div>
+                          <ul
+                            tabIndex={0}
+                            className="dropdown-content menu bg-base-100 rounded-box z-[10] w-52 p-2 shadow w-full text-white text-lg "
+                          >
+                            {meals
+                              .filter(
+                                (meal) =>
+                                  !groupedPlanner[selectedDate]?.some(
+                                    (plan) => plan.meal === meal
+                                  )
+                              )
+                              .map((meal, index) => (
+                                <li
+                                  onClick={() => {
+                                    setSelectedMeal(meal);
+                                    document.activeElement?.blur();
+                                  }}
+                                  key={index}
+                                >
+                                  <a>{meal}</a>
+                                </li>
+                              ))}
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="flex justify-center ">
+                        <button
+                          onClick={addToPlanner}
+                          className="btn  btn-outline  text-lg text-white mt-8"
+                        >
+                          Add to Planner
+                        </button>
+                      </div>
+                    </div>
+                  </dialog>
 
                   {/* Recipe List */}
                   <ul className="p-4 space-y-3">
-                    {recipes.length > 0 ? (
-                      recipes.map((recipe, i) => (
+                    {randomRecipes.length > 0 ? (
+                      randomRecipes.map((recipe, i) => (
                         <li
+                          onClick={() => {
+                            openModal(recipe), setSelectedDate(date);
+                          }}
                           key={i}
                           className="flex items-center gap-4 p-2 hover:bg-gray-800 cursor-pointer rounded-lg"
                         >
