@@ -12,6 +12,8 @@ import Login from './pages/loginPage';
 
 import { AuthContextProvider } from './context/AuthContext';
 import SearchPage from './pages/searchPage';
+import CookBook from './pages/cookBook';
+import ShoppingListPage from './pages/shoppingList';
 const App = () => {
   return (
     <div className="flex flex-col   bg-gray-100">
@@ -27,6 +29,8 @@ const App = () => {
             <Route path="/generate-recipe" element={<AiPage />} />
             <Route path="/planner" element={<MealPlanner />} />
             <Route path="/profile" element={<ProfileSection />} />
+            <Route path="/shopping-list" element={<ShoppingListPage />} />
+            <Route path="/cookbook" element={<CookBook />} />
           </Route>
         </Routes>
       </AuthContextProvider>

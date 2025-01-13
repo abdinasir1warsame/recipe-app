@@ -89,7 +89,10 @@ export default function Sidebar() {
               </li>
 
               <li>
-                <button className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700">
+                <Link
+                  to={'/shopping-list'}
+                  className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700"
+                >
                   {/* Shopping Cart Icon */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -106,7 +109,7 @@ export default function Sidebar() {
                     />
                   </svg>
                   Shopping list
-                </button>
+                </Link>
               </li>
               <li>
                 <Link
@@ -116,23 +119,26 @@ export default function Sidebar() {
                   {/* Calendar Icon */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
+                    strokeWidth={1.5}
                     stroke="currentColor"
+                    className="size-6"
                   >
                     <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8 7V3M16 7V3M3 7h18M4 10h16M4 14h16M4 18h16"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z"
                     />
                   </svg>
                   Meal planner
                 </Link>
               </li>
               <li>
-                <button className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700">
+                <Link
+                  to={'/cookbook'}
+                  className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700"
+                >
                   {/* Book Icon */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -145,11 +151,11 @@ export default function Sidebar() {
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                      d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
                     />
                   </svg>
-                  Favourites
-                </button>
+                  Cook Book
+                </Link>
               </li>
 
               <li>
