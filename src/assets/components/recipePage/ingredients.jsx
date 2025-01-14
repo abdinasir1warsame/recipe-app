@@ -117,7 +117,7 @@ const Ingredients = ({
         </ul>
 
         {/* Add to shopping list button */}
-        <div className="flex flex-col justify-center gap-5 items-center py-10">
+        <div className=" gap-5 items-center py-10">
           {successMessage && (
             <div
               role="alert"
@@ -141,7 +141,7 @@ const Ingredients = ({
           )}
           <button
             onClick={addToShoppingList}
-            className="btn btn-outline btn-md text-xl hover:bg-green-500 hover:text-white"
+            className="btn btn-outline  text-lg "
           >
             Add to shopping list
           </button>

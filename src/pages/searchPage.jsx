@@ -32,7 +32,7 @@ export default function SearchPage() {
         filterParams.push(`${category}=${encodeURIComponent(option)}`);
       });
     });
-
+    console.log('Filters:', filters);
     const filterQuery =
       filterParams.length > 0 ? `&${filterParams.join('&')}` : '';
     const url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey3}&query=${query}&addRecipeInformation=true&number=20${filterQuery}`;

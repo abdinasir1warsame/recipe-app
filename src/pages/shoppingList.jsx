@@ -41,7 +41,7 @@ export default function ShoppingListPage() {
     <div className="flex-1 space-y-5 bg-base-200 text-gray-300 px-2 lg:px-10 xl:px-14 2xl:px-28 py-4 md-py-8 ml-0 lg:ml-64 min-h-screen mb-14 mt-7 lg:mt-0 lg:mb-0">
       <div className="p-5 space-y-16">
         <div>
-          <p className="text-2xl text-gray-600">{}'s</p>
+          <p className="text-2xl text-gray-600">{user.displayName}'s</p>
           <h1 className="text-4xl font-bold ">Shopping List</h1>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4    gap-16 px-5">

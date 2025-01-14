@@ -1,59 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { database } from '../../googleSignin/config'; // Adjust the path as needed
+import { userAuth } from '../../../context/AuthContext';
 
 export default function PopularRecipes() {
-  const [popularRecipes, setPopularRecipes] = useState([]);
+  const [displayedRecipes, setDisplayedRecipes] = useState([]);
+  const { user } = userAuth();
   const navigate = useNavigate();
-  const apiKey3 = '74a1a3dced1b4192a47805e76e6bbcae';
+  const RECIPES_TO_DISPLAY = 10; // Number of recipes to show
 
   useEffect(() => {
-    const fetchPopularRecipes = async () => {
-      const url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey3}&sort=popularity&number=200&addRecipeInformation=true`;
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('Failed to fetch popular recipes');
+    if (user) {
+      const unsubscribe = onSnapshot(
+        collection(database, 'suggestedRecipes'),
+        (querySnapshot) => {
+          const recipes = [];
+          querySnapshot.forEach((doc) => {
+            recipes.push({ id: doc.id, ...doc.data() });
+          });
+
+          // Remove duplicates and shuffle recipes
+          const uniqueRecipes = removeDuplicates(recipes);
+          const shuffledRecipes = shuffleRecipes(uniqueRecipes);
+          setDisplayedRecipes(shuffledRecipes.slice(0, RECIPES_TO_DISPLAY));
+        },
+        (error) => {
+          console.error('Error fetching recipes from Firestore:', error);
         }
-        const data = await response.json();
+      );
 
-        if (Array.isArray(data.results)) {
-          const shuffledRecipes = data.results.sort(() => Math.random() - 0.5);
-          setPopularRecipes(shuffledRecipes);
-          // Save recipes and timestamp in localStorage
-          localStorage.setItem(
-            'popularRecipes',
-            JSON.stringify(shuffledRecipes)
-          );
-          localStorage.setItem('lastFetchTime', Date.now());
-        } else {
-          console.error(
-            'API response does not contain an array of recipes:',
-            data.results
-          );
-        }
-      } catch (error) {
-        console.error('Error fetching popular recipes:', error);
-      }
-    };
+      return () => unsubscribe();
+    }
+  }, [user]);
 
-    const loadRecipes = () => {
-      const storedRecipes = localStorage.getItem('popularRecipes');
-      const lastFetchTime = localStorage.getItem('lastFetchTime');
+  // Helper function to shuffle recipes
+  const shuffleRecipes = (recipes) => {
+    const shuffled = [...recipes];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
 
-      // Check if data was fetched within the last 24 hours
-      if (
-        storedRecipes &&
-        lastFetchTime &&
-        Date.now() - lastFetchTime < 24 * 60 * 60 * 1000
-      ) {
-        setPopularRecipes(JSON.parse(storedRecipes));
-      } else {
-        fetchPopularRecipes();
-      }
-    };
-
-    loadRecipes();
-  }, []);
+  // Helper function to remove duplicates based on recipe ID
+  const removeDuplicates = (recipes) => {
+    const unique = new Map();
+    recipes.forEach((recipe) => {
+      unique.set(recipe.id, recipe);
+    });
+    return Array.from(unique.values());
+  };
 
   const handleRecipeClick = (recipeId) => {
     navigate('/recipes/recipe', { state: { recipe: recipeId } });
@@ -63,7 +61,7 @@ export default function PopularRecipes() {
     <div className="space-y-6">
       <h1 className="text-3xl">Most Popular Recipes</h1>
       <div className="grid grid-cols-3 sm-grid-cols-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-8 ">
-        {popularRecipes.slice(0, 8).map((recipe) => (
+        {displayedRecipes.map((recipe) => (
           <div
             key={recipe.id}
             className="shadow-md space-y-1 cursor-pointer"

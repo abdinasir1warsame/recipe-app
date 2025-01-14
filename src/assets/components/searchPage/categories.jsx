@@ -9,7 +9,7 @@ export default function Categories({ handleCategoryClick }) {
         {Recipes.sort().map((recipe, index) => (
           <div
             key={recipe.id}
-            className=" mb-4 w-20 md:w-28"
+            className="mb-4 w-20 md:w-28 transform hover:scale-110 transition duration-300"
             onClick={() => handleCategoryClick(recipe.name)}
           >
             <div className="flex w-20 md:w-28 ">

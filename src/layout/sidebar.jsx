@@ -16,8 +16,31 @@ export default function Sidebar() {
         <div className="space-y-6">
           {/* Primary Section */}
           <div>
-            <h2 className="text-md font-bold mb-2">My section</h2>
             <ul className="space-y-2">
+              <h2 className="text-md font-bold mb-5 text-2xl ">Dashboard</h2>
+              <li>
+                <Link
+                  to={'/'}
+                  className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700"
+                >
+                  {/* Home Icon */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+                    />
+                  </svg>
+                  Home
+                </Link>
+              </li>
               <li>
                 <Link
                   to={'/search'}
@@ -157,95 +180,35 @@ export default function Sidebar() {
                   Cook Book
                 </Link>
               </li>
-
-              <li>
-                <button className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700">
-                  {/* Plus Icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 5v14m7-7H5"
-                    />
-                  </svg>
-                  Add recipe
-                </button>
-              </li>
             </ul>
           </div>
 
           {/* Secondary Section */}
+
           <div>
-            <h2 className="text-md font-bold mb-2">More</h2>
-            <ul className="space-y-2">
-              <li>
-                <button className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700">
-                  {/* Explore Icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M21 11l-5 5-5-5m0 0l5-5 5 5M3 12h18"
-                    />
-                  </svg>
-                  Discover
-                </button>
-              </li>
-              <li>
-                <button className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700">
-                  {/* Search Icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M21 21l-6-6m2-4a8 8 0 10-8 8 8 8 0 008-8z"
-                    />
-                  </svg>
-                  Search users
-                </button>
-              </li>
-              <li>
-                <button className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700">
-                  {/* Help Icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8 6h8m-8 4h8m-8 4h8m-8 4h8"
-                    />
-                  </svg>
-                  Onboarding
-                </button>
-              </li>
-            </ul>
+            <li>
+              <Link
+                to={'/'}
+                className="w-full flex items-center gap-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700"
+              >
+                {/* Home Icon */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"
+                  />
+                </svg>
+                logout
+              </Link>
+            </li>
           </div>
         </div>
 

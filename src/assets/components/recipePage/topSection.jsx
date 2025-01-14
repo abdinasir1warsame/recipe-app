@@ -8,6 +8,8 @@ import {
   showMoreIcon,
 } from '../../../shared/icons';
 
+import AddToPlanner from './addToPlan';
+
 const TopSection = ({ user, recipe, recipeData, database }) => {
   const [successMessage2, setSuccessMessage2] = useState('');
   // Function to add recipe to Firestore
@@ -74,7 +76,7 @@ const TopSection = ({ user, recipe, recipeData, database }) => {
           {shareIcon} Share
         </button>
         <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md flex gap-2">
-          {planIcon} Meal Planner
+          {planIcon} <AddToPlanner recipeData={recipeData} />
         </button>
         <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md flex gap-2">
           {showMoreIcon}

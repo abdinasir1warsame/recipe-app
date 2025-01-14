@@ -71,7 +71,7 @@ export default function SearchBar({
               </label>
               <ul
                 tabIndex={index}
-                className="dropdown-content z-50 mt-2 menu p-2 bg-base-100 bg-opacity-100 shadow rounded-box w-52 group-hover:block hidden"
+                className="dropdown-content z-50  menu p-2 bg-base-100 bg-opacity-100 shadow rounded-box w-52 group-hover:block hidden"
               >
                 {filter.options.map((option, idx) => (
                   <li key={idx}>

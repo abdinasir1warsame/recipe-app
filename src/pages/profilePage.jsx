@@ -1,6 +1,62 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
+import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore';
+import { database } from '../assets/googleSignin/config'; // Adjust the path as necessary
+import { userAuth } from '../context/AuthContext';
+import { data } from 'autoprefixer';
 
 const ProfileSection = () => {
+  const { user } = userAuth();
+  const [totalIngredients, setTotalIngredients] = useState('');
+  const [totalPlanner, setTotalPlanner] = useState('');
+  const [totalRecipes, setTotalRecipes] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) return;
+      try {
+        // Define paths for the user's data
+        const ingredientsRef = collection(database, 'ingredients');
+        const plannerRef = collection(database, 'planner');
+        const recipesRef = collection(database, 'recipes');
+
+        const userQuery = (ref) => query(ref, where('userId', '==', user.uid));
+
+        const [ingredientsSnap, plannerSnap, recipesSnap] = await Promise.all([
+          getDocs(userQuery(ingredientsRef)),
+          getDocs(userQuery(plannerRef)),
+          getDocs(userQuery(recipesRef)),
+        ]);
+
+        // Convert snapshots to arrays
+        const ingredients = ingredientsSnap.docs.map((doc) => doc.data());
+        const planner = plannerSnap.docs.map((doc) => doc.data());
+        const recipes = recipesSnap.docs.map((doc) => doc.data());
+
+        setTotalIngredients(ingredients.length);
+        setTotalPlanner(planner.length);
+        setTotalRecipes(recipes.length);
+
+        // Example: Calculate arrays and active days
+        const dataSummary = {
+          totalIngredients: ingredients.length,
+          totalPlanner: planner.length,
+          totalRecipes: recipes.length,
+        };
+
+        console.log('Data Summary:', dataSummary);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, [user]);
   return (
     <div className="flex-1 justify-center items-center bg-base-200 text-gray-300 px-8 lg:px-10 xl:px-14 2xl:px-28 py-10 md-py-8 ml-0 lg:ml-64 min-h-screen mb-14 mt-9 lg:mt-0 lg:mb-0">
       <div className="space-y-5">
@@ -15,7 +71,7 @@ const ProfileSection = () => {
             </div>
           </div>
           <div>
-            <h1 className="text-4xl font-bold">John Doe</h1>
+            <h1 className="text-4xl font-bold">{user.displayName}</h1>
             <p className="text-xl text-gray-600">AI Recipe Enthusiast</p>
           </div>
         </div>
@@ -29,9 +85,9 @@ const ProfileSection = () => {
               className="radial-progress text-primary"
               style={{ '--value': 75 }}
             >
-              15/20
+              {totalPlanner}/21
             </div>
-            <p className="mt-2 text-gray-500">Days Planned</p>
+            <p className="mt-2 text-gray-300">Meals Planned</p>
           </div>
 
           {/* Shopping List */}
@@ -41,34 +97,34 @@ const ProfileSection = () => {
               className="radial-progress text-primary"
               style={{ '--value': 40 }}
             >
-              8/20
+              {totalIngredients}/20
             </div>
-            <p className="mt-2 text-gray-500">Items in List</p>
+            <p className="mt-2 text-gray-300">Items in List</p>
           </div>
 
           {/* My Created Recipes */}
           <div className="bg-base-100 shadow-md p-4 rounded-lg text-center">
-            <h2 className="text-xl font-semibold mb-2">My Created Recipes</h2>
+            <h2 className="text-xl font-semibold mb-2">AI Generated Recipes</h2>
             <div
               className="radial-progress text-primary"
               style={{ '--value': 90 }}
             >
-              45/50
+              2/10
             </div>
-            <p className="mt-2 text-gray-500">Total Recipes</p>
+            <p className="mt-2 text-gray-300">Total Recipes</p>
           </div>
 
           {/* Favorites */}
           <div className="bg-base-100 shadow-md p-4 rounded-lg text-center">
-            <h2 className="text-xl font-semibold mb-2">Favorites</h2>
-            <p className="text-4xl font-bold text-primary">23</p>
-            <p className="mt-2 text-gray-500">Saved Recipes</p>
+            <h2 className="text-xl font-semibold mb-2">Favourites</h2>
+            <p className="text-4xl font-bold text-primary">{totalRecipes}</p>
+            <p className="mt-2 text-gray-300">Saved to Cook Book</p>
           </div>
 
           {/* General Stats */}
           <div className="bg-base-100 shadow-md p-4 rounded-lg col-span-2 text-center">
             <h2 className="text-xl font-semibold mb-2">General Stats</h2>
-            <p className="text-gray-600">
+            <p className="text-gray-300">
               You’ve been active for <strong>120 days</strong>, created{' '}
               <strong>45 recipes</strong>, and planned <strong>15 meals</strong>
               !
