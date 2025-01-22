@@ -1,58 +1,12 @@
 import { useState, useEffect } from 'react';
-import {
-  searchIcon,
-  filterIcon,
-  chevronUp,
-  chevronDown,
-  favoritesIcon,
-  tagsIcon,
-  cookbookIcon,
-  cuisineIcon,
-  difficultyIcon,
-  ratingIcon,
-  totalTimeIcon,
-  Sparkles,
-  shareIcon,
-  addRecipeIcon,
-  planIcon,
-} from '../shared/icons';
-
+import { Sparkles } from '../shared/icons';
 export default function AiPage() {
-  const apiKey =
-    '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';
-  const [filtersState, setFiltersState] = useState({
-    diet: [],
-    intolerance: [],
-    dishType: [],
-    cuisine: [],
-    time: [],
-    difficulty: [],
-    rating: [],
-  });
-  const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchActive, setIsSearchActive] = useState(false);
 
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
-
-  const handleFilterChange = (filterCategory, option) => {
-    setFiltersState((prevState) => {
-      const newState = { ...prevState };
-      const filterList = newState[filterCategory];
-      if (filterList.includes(option)) {
-        newState[filterCategory] = filterList.filter((item) => item !== option);
-      } else {
-        newState[filterCategory] = [...filterList, option];
-      }
-      return newState;
-    });
-  };
-
-  const toggleFilters = () => {
-    setShowFilters((prev) => !prev);
-  };
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -135,25 +89,62 @@ export default function AiPage() {
     }
   };
 
+  // const fetchImage = async () => {
+  //   if (!searchQuery) return;
+  //   setLoading(true);
+  //   const apiKey = 'AIzaSyDq-33oatddrGD_CooK8cbbvjf3HPuh9Oo';
+  //   const cx = '271f2772958b441bb';
+
+  //   try {
+  //     const response = await fetch(
+  //       `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${searchQuery}&searchType=image&num=1&imgSize=medium`
+  //     );
+  //     const data = await response.json();
+  //     if (data.items && data.items.length > 0) {
+  //       setImageUrl(data.items[0].link);
+  //     } else {
+  //       setImageUrl('');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching image:', error);
+  //     setImageUrl('');
+  //   }
+  // };
   const fetchImage = async () => {
     if (!searchQuery) return;
     setLoading(true);
-    const apiKey = 'AIzaSyDq-33oatddrGD_CooK8cbbvjf3HPuh9Oo';
-    const cx = '271f2772958b441bb';
+    console.log('Making image generation request...');
 
     try {
       const response = await fetch(
-        `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${searchQuery}&searchType=image&num=1&imgSize=medium`
+        'https://api.openai.com/v1/images/generations',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            prompt: searchQuery, // Use the search query as the image prompt
+            n: 1, // Number of images to generate
+            size: '1024x1024', // Image size
+          }),
+        }
       );
+
       const data = await response.json();
-      if (data.items && data.items.length > 0) {
-        setImageUrl(data.items[0].link);
+      console.log('API Response:', data);
+
+      if (data.data && data.data.length > 0) {
+        setImageUrl(data.data[0].url); // Set the generated image URL
       } else {
         setImageUrl('');
       }
     } catch (error) {
-      console.error('Error fetching image:', error);
+      console.error('Error generating image:', error);
       setImageUrl('');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -183,24 +174,7 @@ export default function AiPage() {
               value={searchQuery}
               onChange={handleSearchChange}
             />
-            <button
-              className="btn btn-outline btn-md text-lg px-5 flex gap-3"
-              onClick={toggleFilters}
-            >
-              {filterIcon} Filter {showFilters ? chevronUp : chevronDown}
-            </button>
           </div>
-
-          {showFilters && (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4">
-              <button
-                className="btn hover:border-white shadow-md btn-sm bg-gray-800 hover:bg-gray-700"
-                onClick={() => setFiltersState({})}
-              >
-                Clear Filters
-              </button>
-            </div>
-          )}
         </div>
       )}
       {!isSearchActive && (
